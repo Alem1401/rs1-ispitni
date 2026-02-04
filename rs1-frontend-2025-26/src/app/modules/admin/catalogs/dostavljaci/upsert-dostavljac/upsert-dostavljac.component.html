@@ -1,0 +1,22 @@
+<div style="background-color: white">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field>
+    <input matInput formControlName="naziv" placeholder="unesite naziv">
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput formControlName="kod" placeholder="unesite naziv">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-select formControlName="tip">
+      <mat-option [value]="1">Interni</mat-option>
+      <mat-option [value]="2">Eksterni</mat-option>
+      <mat-option [value]="3">Freelance</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-checkbox formControlName="aktivan">Aktivan</mat-checkbox>
+
+  <button mat-raised-button  type="submit">{{editMode ? 'Update' : 'Add'}}</button>
+</form>
+</div>

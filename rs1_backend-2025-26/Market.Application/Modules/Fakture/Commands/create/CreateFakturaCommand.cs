@@ -1,0 +1,20 @@
+﻿using Market.Domain.Entities.Fakture;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Market.Application.Modules.Fakture.Commands.create
+{
+    public class CreateFakturaCommand : IRequest<int>
+    {
+        public string Broj {  get; set; }
+
+        public FakturaTip Tip { get; set; }
+
+        public string? Napomena { get; set; }
+
+        public List<FakturaStavkaDto> Stavke { get; set; }
+    }
+}
