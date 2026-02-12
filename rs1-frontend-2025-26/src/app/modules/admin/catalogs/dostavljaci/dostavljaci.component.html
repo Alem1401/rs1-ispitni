@@ -10,13 +10,13 @@
       </div>
 
       <div class="actions-container">
-        <mat-form-field class="search-field" appearance="outline">
+        <mat-form-field class="search-field" appearance="outline" >
           <mat-label>Pretraga...</mat-label>
-          <input matInput placeholder="Pretraži dostavljače..." [(ngModel)]="searchTerm" (keydown.enter)="search()"/>
+          <input matInput placeholder="Pretraži dostavljače..." [(ngModel)]="request.search" (keydown.enter)="loadPagedData()"/>
           <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" (click)="addDostavljac()">
+        <button mat-raised-button color="primary" (click)="dodajNovog()">
           <mat-icon>add</mat-icon>
           Novi dostavljač
         </button>
@@ -27,7 +27,7 @@
   <!-- Info napomena -->
   <div class="info-card">
     <mat-icon>info</mat-icon>
-    <table mat-table [dataSource]="this.items">
+    <table mat-table [dataSource]="items">
       <ng-container matColumnDef="Naziv">
         <th mat-header-cell *matHeaderCellDef>Naziv</th>
         <td mat-cell *matCellDef="let element">{{element.naziv}}</td>
@@ -42,19 +42,20 @@
       </ng-container>
       <ng-container matColumnDef="Aktivan">
         <th mat-header-cell *matHeaderCellDef>Aktivan</th>
-        <td mat-cell *matCellDef="let element">{{element.aktivan ? "Da" : "Ne"}}</td>
+        <td mat-cell *matCellDef="let element">{{element.isAktivan ? "Da" : "Ne"}}</td>
       </ng-container>
-      <ng-container matColumnDef="Akcije">
-        <th mat-header-cell *matHeaderCellDef>Aktivnosti</th>
+      <ng-container matColumnDef="Dugmici">
+        <th mat-header-cell *matHeaderCellDef>Akcije</th>
         <td mat-cell *matCellDef="let element">
-          <button mat-button (click)="edituj(element.id)">Edit dostavljac </button>
-        <button mat-button style="background-color: red" (click)="obrisi(element)"> Delete Dostavljac </button></td>
+          <button mat-button (click)="updateDostavljaca(element.id)" >Update</button>
+          <button mat-button (click)="deleteDostavljaca(element)">Delete</button>
+
+        </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
-      <tr mat-row *matRowDef="let element;columns : displayColumns"></tr>
+
+     <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+      <tr mat-row *matRowDef="let element;columns:displayColumns"></tr>
 
     </table>
-
   </div>
-  <app-fit-paginator-bar [vm]="this"></app-fit-paginator-bar>
 </div>

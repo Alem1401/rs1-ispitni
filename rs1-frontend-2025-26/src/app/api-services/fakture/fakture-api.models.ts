@@ -28,24 +28,22 @@ export interface ListFaktureQueryDto {
   brojStavki: number;
 }
 
+export interface FakturaStavkaUpsertDto {
+productCategoryId : number,
+  name : string,
+  quantity : number
+}
+export class FakturaListQuery extends BasePagedQuery{
+
+}
+export interface FakturaUpsertDto{
+  brojRacuna : string,
+  tip : FakturaTip,
+  napomena? : string,
+  stavke: FakturaStavkaUpsertDto[]
+}
+
 /**
  * Paged response for GET /Fakture
  */
-export interface FakturaStavkaDto {
-  name : string,
-  categoryId : number,
-  quantity : number
-}
-
-export class getFaktureList extends BasePagedQuery{
-
-}
-
-export interface CreateFakturaCommand{
-  broj : string,
-  tip : FakturaTip,
-  napomena?: string |null
-  stavke : FakturaStavkaDto[]
-}
-
 export type ListFaktureResponse = PageResult<ListFaktureQueryDto>;

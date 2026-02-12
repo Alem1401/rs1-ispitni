@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FaktureApiService } from '../../../../api-services/fakture/fakture-api.service';
-import {ListFaktureQueryDto, FakturaTip, getFaktureList} from '../../../../api-services/fakture/fakture-api.models';
+import {ListFaktureQueryDto, FakturaTip, FakturaListQuery} from '../../../../api-services/fakture/fakture-api.models';
 import {BaseListPagedComponent} from '../../../../core/components/base-classes/base-list-paged-component';
 
 @Component({
@@ -10,27 +10,30 @@ import {BaseListPagedComponent} from '../../../../core/components/base-classes/b
   templateUrl: './fakture.component.html',
   styleUrl: './fakture.component.scss'
 })
-export class FaktureComponent extends BaseListPagedComponent<ListFaktureQueryDto, getFaktureList> implements OnInit {
-  protected override loadPagedData(): void {
-    this.faktureApiService.list(this.request).subscribe(
-      {next: response => this.handlePageResult(response)}
-    )
+export class FaktureComponent extends BaseListPagedComponent<ListFaktureQueryDto, FakturaListQuery> implements OnInit {
 
-  }
   private router = inject(Router);
   private faktureApiService = inject(FaktureApiService);
 
-  fakture: ListFaktureQueryDto[] = [];
-  displayedColumns: string[] = ['brojRacuna', 'tip', 'datumKreiranja', 'brojStavki'];
 
   constructor() {
     super();
-    this.request = new getFaktureList()
-  }
-  ngOnInit(): void {
- this.initList()
+    this.request = new FakturaListQuery();
   }
 
+  displayedColumns: string[] = ['brojRacuna', 'tip', 'datumKreiranja', 'brojStavki'];
+
+  ngOnInit(): void {
+   this.initList()
+  }
+
+  protected override loadPagedData(): void {
+    this.faktureApiService.list(this.request).subscribe({
+      next: response => {
+        this.handlePageResult(response);
+      }
+    })
+  }
 
 
   onNovaFaktura(): void {

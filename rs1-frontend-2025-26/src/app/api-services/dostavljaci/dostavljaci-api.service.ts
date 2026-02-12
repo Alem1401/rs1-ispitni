@@ -3,12 +3,11 @@ import {environment} from '../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {
   DostavljaciListRequest,
-  DostavljacListResponse,
-  ResponseDostavljacDto,
-  upsertDostavljac
+  DostavljaciListResponse,
+  DostavljaciResponse,
+  upsertDostavljacDto
 } from './dostavljaci-api.model';
 import {buildHttpParams} from '../../core/models/build-http-params';
-import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -17,24 +16,25 @@ export class DostavljaciApiService {
   private readonly baseUrl = `${environment.apiUrl}/Dostavljaci`;
   private http = inject(HttpClient);
 
-  list(request? : DostavljaciListRequest) : Observable<DostavljacListResponse> {
-    const params  = request? buildHttpParams(request) as any : undefined;
-    return this.http.get<DostavljacListResponse>(this.baseUrl,{params})
+  list(request? : DostavljaciListRequest){
+    const params = request ? buildHttpParams(request) as any : undefined;
+  return  this.http.get<DostavljaciListResponse>(this.baseUrl,{params});
   }
 
-  create(toAdd : upsertDostavljac){
-    return this.http.post(this.baseUrl, toAdd)
+  getById(id : number){
+    return this.http.get<DostavljaciResponse>(`${this.baseUrl}/${id}`);
   }
 
-  updateDostavljac(toAdd: upsertDostavljac, id : number){
-    return this.http.put(`${this.baseUrl}/${id}`, toAdd)
+  create(payload : upsertDostavljacDto){
+    return this.http.post(this.baseUrl, payload);
   }
 
-  deleteDostavljac(id: number){
-    return this.http.delete(`${this.baseUrl}/${id}`)
+  update(payload : upsertDostavljacDto,id : number  ){
+    return this.http.put(`${this.baseUrl}/${id}`, payload);
   }
 
-  getById(id: number){
-    return this.http.get<ResponseDostavljacDto>(`${this.baseUrl}/${id}`)
+  delete(id : number){
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
+
 }

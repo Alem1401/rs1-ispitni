@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Market.Application.Modules.Dostavljaci.Queries.getById
+namespace Market.Application.Modules.Dostavljaci.Queries.list
 {
-    public class DostavljacByIdDto
+    public class ListDostavljacDto
     {
         public int Id { get; set; }
         public string Naziv { get; set; }

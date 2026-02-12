@@ -8,6 +8,6 @@ namespace Market.Application.Modules.Dostavljaci.Commands.delete
 {
     public class DeleteDostavljacCommand : IRequest<Unit>
     {
-        public int Id {  get; set; }
+        public int Id { get; set;    }
     }
 }

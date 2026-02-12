@@ -11,7 +11,13 @@ namespace Market.Application.Modules.Dostavljaci.Commands.create
     {
         public async Task<int> Handle(CreateDostavljacCommand request, CancellationToken cancellationToken)
         {
-            var toAdd = new DostavljacEntity { Aktivan = request.Aktivan , Kod = request.Kod , Tip = request.Tip , Naziv = request.Naziv};
+            var toAdd = new DostavljacEntity
+            {
+                Naziv = request.Naziv,
+                Tip = request.Tip,
+                isAktivan = request.isAktivan,
+                Kod = request.Kod,
+            };
             ctx.Dostavljaci.Add(toAdd);
             await ctx.SaveChangesAsync(cancellationToken);
             return toAdd.Id;

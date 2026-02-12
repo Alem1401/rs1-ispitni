@@ -1,8 +1,8 @@
 ﻿using Market.Application.Modules.Dostavljaci.Commands.create;
 using Market.Application.Modules.Dostavljaci.Commands.delete;
 using Market.Application.Modules.Dostavljaci.Commands.update;
-using Market.Application.Modules.Dostavljaci.Queries.GetById;
-using Market.Application.Modules.Dostavljaci.Queries.List;
+using Market.Application.Modules.Dostavljaci.Queries.getById;
+using Market.Application.Modules.Dostavljaci.Queries.list;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,45 +13,44 @@ namespace Market.API.Controllers
     [AllowAnonymous]
     public class DostavljaciController(ISender sender) : ControllerBase
     {
+
         [HttpPost]
 
-        public async Task<ActionResult<int>> create([FromBody] CreateDostavljacCommand cmd, CancellationToken ct)
+        public async Task<int> create([FromBody]CreateDostavljacCommand cmd,CancellationToken ct)
         {
-            var response = await sender.Send(cmd, ct);
-            return response;
+            var result = await sender.Send(cmd,ct);
+            return result;
         }
 
         [HttpPut("{id}")]
-
-        public async Task<ActionResult<Unit>> update([FromBody] UpdateDostavljacCommand cmd, int id, CancellationToken ct)
+        public async Task<Unit> update([FromBody]UpdateDostavljacCommand cmd, int id, CancellationToken cancellationToken)
         {
             cmd.Id = id;
-            var response =await sender.Send(cmd, ct);
+            var response = await sender.Send(cmd,cancellationToken);
             return response;
         }
 
         [HttpDelete("{id}")]
-        
-        public async Task<ActionResult<Unit>> delete(int id,CancellationToken ct)
-        {
-            var response =await sender.Send(new DeleteDostavljacCommand { Id = id}, ct);
-            return response;
-        }
 
-        [HttpGet("{id}")]
-
-        public async Task<ActionResult<DostavljacByIdDto>> getById(int id, CancellationToken ct)
+        public async Task<Unit> delete(int id,CancellationToken cancellationToken)
         {
-            var response =await sender.Send(new GetDostavljacByIdQuery { Id = id}, ct);
+            var response =await sender.Send(new DeleteDostavljacCommand { Id = id},cancellationToken);
             return response;
         }
 
         [HttpGet]
 
-
-        public async Task<ActionResult<PageResult<DostavljaciListDto>>> getList([FromQuery] DostavljaciListQuery q, CancellationToken ct)
+        public async Task<PageResult<ListDostavljacDto>> list([FromQuery]ListDostavljacQuery q, CancellationToken cancellationToken)
         {
-            var response = await sender.Send(q,ct);
+            var response = await sender.Send(q,cancellationToken);
+            return response;
+        }
+
+        [HttpGet("{id}")]
+
+        public async Task<DostavljacByIdDto> getById(int id, CancellationToken cancellationToken)
+        {
+            var response = await sender.Send(new DostavljacByIdQuery { Id = id},cancellationToken);
             return response;
         }
     }

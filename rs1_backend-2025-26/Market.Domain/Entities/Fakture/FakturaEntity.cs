@@ -26,6 +26,7 @@ public class FakturaEntity : BaseEntity
     /// Broj stavki u fakturi.
     /// </summary>
     public int BrojStavki { get; set; }
+    public ICollection<FakturaStavkaEntity> Stavke { get; set; } = new List<FakturaStavkaEntity>();
 
     /// <summary>
     /// Single source of truth for technical/business constraints.

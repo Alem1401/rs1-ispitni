@@ -20,6 +20,5 @@ public interface IAppDbContext
 
     DbSet<DostavljacEntity> Dostavljaci { get; }
 
-    DbSet<FakturaStavkaEntity> Stavke { get; }
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

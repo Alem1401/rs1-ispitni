@@ -2,18 +2,18 @@ import {Component, inject, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
-  CreateFakturaCommand,
-  FakturaStavkaDto,
-  FakturaTip
+  FakturaStavkaUpsertDto,
+  FakturaTip,
+  FakturaUpsertDto
 } from '../../../../../api-services/fakture/fakture-api.models';
 import {
-  GetProductCategoryByIdQueryDto, ListProductCategoriesQueryDto
+  ListProductCategoriesQueryDto
 } from '../../../../../api-services/product-categories/product-categories-api.model';
 import {
   ProductCategoriesApiService
 } from '../../../../../api-services/product-categories/product-categories-api.service';
+import {ToasterService} from '../../../../../core/services/toaster.service';
 import {FaktureApiService} from '../../../../../api-services/fakture/fakture-api.service';
-import {DialogHelperService} from '../../../../shared/services/dialog-helper.service';
 
 interface Tip {
   id: FakturaTip;
@@ -31,20 +31,19 @@ interface Tip {
 export class FakturaAddComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
-  kategorije : ListProductCategoriesQueryDto[] = [];
-  categoryApi = inject(ProductCategoriesApiService);
+  pcApi = inject(ProductCategoriesApiService);
   form: FormGroup;
-  dialog = inject(DialogHelperService)
   isSaving = false;
   isLoading = false;
-fakturaApi = inject(FaktureApiService);
+  toaster = inject(ToasterService);
+  fakturaApi = inject(FaktureApiService);
   tipovi: Tip[] = [
     { id: FakturaTip.Ulazna, name: 'Ulazna' },
     { id: FakturaTip.Izlazna, name: 'Izlazna' }
   ];
 
-  //ispitni zadatak: zamjeniti hardkodirano sa API rezultatom
 
+  kategorije: ListProductCategoriesQueryDto[] = [];
   constructor() {
     this.form = this.fb.group({
       brojRacuna: [''],
@@ -59,8 +58,8 @@ fakturaApi = inject(FaktureApiService);
   }
 
   ngOnInit(): void {
-        this.categoryApi.list().subscribe({
-          next: (data) => {
+        this.pcApi.list().subscribe({
+          next: data =>{
             this.kategorije = data.items;
           }
         })
@@ -72,14 +71,19 @@ fakturaApi = inject(FaktureApiService);
 
   addItem(): void {
     const itemGroup = this.fb.group({
-      kategorijaId: [''],
-      proizvod: [''],
-      kolicina: [1]
+      kategorijaId: [1,Validators.required],
+      proizvod: ['',Validators.required],
+      kolicina: [1,Validators.min(1)]
     });
     this.items.push(itemGroup);
   }
 
   removeItem(index: number): void {
+    if(this.items.length === 1){
+      this.toaster.error("Must contain at least one item");
+      return;
+
+    }
     this.items.removeAt(index);
   }
 
@@ -89,36 +93,34 @@ fakturaApi = inject(FaktureApiService);
 
   onSubmit(): void {
     if (this.form.valid) {
-     const stavkeFakture : FakturaStavkaDto[] = []
+      const stavkeFakture : FakturaStavkaUpsertDto[] = [];
       for (const item of this.items.controls) {
-
-        const novaStavka : FakturaStavkaDto = {
-          name : item.get("proizvod")?.value ?? " ",
-          categoryId : Number(item.get("kategorijaId")?.value),
-          quantity : Number(item.get("kolicina")?.value ?? 0),
-
+        const stavka : FakturaStavkaUpsertDto = {
+          name : item.get("proizvod")?.value,
+          productCategoryId : item.get("kategorijaId")?.value,
+          quantity : item.get("kolicina")?.value,
         }
-        stavkeFakture.push(novaStavka);
-      }
-      const faktura : CreateFakturaCommand = {
-        broj : this.form.get("brojRacuna")?.value ?? "NN",
-        tip  : this.form.get("tip")?.value ?? 1,
-        stavke : stavkeFakture,
-        napomena : this.form.get("napomena")?.value ?? null,
+        stavkeFakture.push(stavka);
 
+      }
+      const faktura : FakturaUpsertDto = {
+        tip: this.form.get("tip")?.value,
+        stavke :  stavkeFakture,
+        napomena : this.form.get("napomena")?.value,
+        brojRacuna: this.form.get("brojRacuna")?.value,
       }
       this.fakturaApi.create(faktura).subscribe({
-        next: (response) => {
-          if(response == -1){
-            this.dialog.showError("Cannot add","It was not possible to add this");
-            this.router.navigate(['admin/fakture']);
+        next: data => {
+          if(data <0){
+            this.toaster.error("faktura nije validna jer item koji izlazi iz skladista ili ne postoji ili ga nema dovoljno na stanju");
+            this.router.navigate(['/admin/fakture']);
           }
           else{
-            this.dialog.showSuccess("Added succesfuly","Uspjesno se dodala faktura");
-            this.router.navigate(['admin/fakture']);
+            this.toaster.success("uspjesno kreirana faktura");
+            this.router.navigate(['/admin/fakture']);
           }
-        }
 
+        }
       })
 
     }
